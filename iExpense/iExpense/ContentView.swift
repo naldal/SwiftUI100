@@ -7,34 +7,36 @@
 
 import SwiftUI
 
-struct SecondView: View {
-    
-    @Environment(\.dismiss) var 닫아
-    @Environment(\.colorScheme) var changeScheme
-    
-    let name: String
-    
-    var body: some View {
-        Button("Dismiss") {
-            닫아()
-        }
-        .foregroundStyle(changeScheme == .dark ? .red : .blue)
-    }
-}
-
 struct ContentView: View {
+    @State private var numbers = [Int]()
+    @State private var currentNumber = 1
     
     @State private var showingSheet = false
     
     var body: some View {
-        Button("Show Sheet") {
-            print(showingSheet)
-            showingSheet.toggle()
-            print(showingSheet)
+        NavigationStack {
+            VStack {
+                List {
+                    ForEach(numbers, id: \.self) {
+                        Text("Row \($0)")
+                    }
+                    .onDelete(perform: { indexSet in
+                        self.removeRows(at: indexSet)
+                    })
+                }
+                Button("Add Number") {
+                    numbers.append(currentNumber)
+                    currentNumber += 1
+                }
+            }
+            .toolbar {
+                EditButton()
+            }
         }
-        .sheet(isPresented: $showingSheet, content: {
-            SecondView(name: "@towstraws")
-        })
+    }
+    
+    func removeRows(at offsets: IndexSet) {
+        numbers.remove(atOffsets: offsets)
     }
 }
 
