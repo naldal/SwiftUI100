@@ -5,27 +5,36 @@
 //  Created by 송하민 on 2/13/24.
 //
 
-import Observation
 import SwiftUI
 
-@Observable
-class User {
-    var firstName = "Bilbo"
-    var lastName = "Baggins"
+struct SecondView: View {
+    
+    @Environment(\.dismiss) var 닫아
+    @Environment(\.colorScheme) var changeScheme
+    
+    let name: String
+    
+    var body: some View {
+        Button("Dismiss") {
+            닫아()
+        }
+        .foregroundStyle(changeScheme == .dark ? .red : .blue)
+    }
 }
 
 struct ContentView: View {
-
-    @State private var user = User()
+    
+    @State private var showingSheet = false
     
     var body: some View {
-        VStack {
-            Text("Your name is \(user.firstName) \(user.lastName)")
-            
-            TextField("First name", text: $user.firstName)
-            TextField("Last name", text: $user.lastName)
+        Button("Show Sheet") {
+            print(showingSheet)
+            showingSheet.toggle()
+            print(showingSheet)
         }
-        .padding()
+        .sheet(isPresented: $showingSheet, content: {
+            SecondView(name: "@towstraws")
+        })
     }
 }
 
