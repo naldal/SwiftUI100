@@ -8,19 +8,20 @@
 import SwiftUI
 
 struct ContentView: View {
+ 
     var body: some View {
-        ZStack {
-            VStack(spacing: 0, content: {
-                Color.red
-                Color.blue
-            })
-            Text("Your content")
-                .foregroundStyle(.secondary)
-                .padding(50)
-                .background(.ultraThinMaterial)
+        Button {
+            print("button was tapped")
+        } label: {
+            HStack {
+                Label("edit", systemImage: "pencil")
+                    .padding()
+                    .foregroundStyle(.white)
+                    .background(.red)
+            }
         }
-        .ignoresSafeArea()
     }
+    
 }
 
 #Preview {
