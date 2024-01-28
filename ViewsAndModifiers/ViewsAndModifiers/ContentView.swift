@@ -7,30 +7,54 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    
-    var motto1: some View { 
-        Text("인생을 즐겨라")
-    }
-    let motto2 = Text("느리지만 꾸준하게")
-    
-    @ViewBuilder var spells: some View {
-        Group {
-            Text("Lumos")
-            Text("Obliviate")
-        }
-    }
-    
-    var body: some View {
-        VStack {
-            motto1
-                .foregroundStyle(.red)
-            motto2
-                .foregroundStyle(.blue)
-        }
-        .padding()
+struct Title: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.largeTitle)
+            .foregroundStyle(.white)
+            .padding()
+            .background(.blue)
+            .clipShape(.rect(cornerRadius: 10))
     }
 }
+
+extension View {
+    func titleStyle() -> some View {
+        modifier(Title())
+    }
+}
+
+struct Watermark: ViewModifier {
+    var text: String
+    
+    func body(content: Content) -> some View {
+        ZStack(alignment: .bottomTrailing, content: {
+            content
+            
+            Text(text)
+                .font(.caption)
+                .foregroundStyle(.white)
+                .padding(5)
+                .background(.black)
+        })
+    }
+}
+
+extension View {
+    func watermark(with text: String) -> some View {
+        modifier(Watermark(text: text))
+    }
+}
+
+struct ContentView: View {
+    
+    var body: some View {
+        Color.blue
+            .frame(width: 300, height: 200)
+            .watermark(with: "Hacking with Swift!")
+    }
+}
+
 
 #Preview {
     ContentView()
