@@ -10,7 +10,7 @@ import SwiftUI
 struct GridStack<Content: View>: View {
     let rows: Int
     let colums: Int
-    let content: (Int, Int) -> Content
+    @ViewBuilder let content: (Int, Int) -> Content
     
     var body: some View {
         VStack {
@@ -29,7 +29,8 @@ struct ContentView: View {
     
     var body: some View {
         GridStack(rows: 4, colums: 4) { row, col in
-            return Text("R\(row) C\(col)")
+            Image(systemName: "\(row * 4 + col).circle")
+            Text("R\(row) C\(col)")
         }
     }
 }
