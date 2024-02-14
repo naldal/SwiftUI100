@@ -7,36 +7,17 @@
 
 import SwiftUI
 
+struct User {
+    let firstName: String
+    let lastName: String
+}
+
 struct ContentView: View {
-    @State private var numbers = [Int]()
-    @State private var currentNumber = 1
-    
-    @State private var showingSheet = false
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                List {
-                    ForEach(numbers, id: \.self) {
-                        Text("Row \($0)")
-                    }
-                    .onDelete(perform: { indexSet in
-                        self.removeRows(at: indexSet)
-                    })
-                }
-                Button("Add Number") {
-                    numbers.append(currentNumber)
-                    currentNumber += 1
-                }
-            }
-            .toolbar {
-                EditButton()
-            }
+        VStack {
+            
         }
-    }
-    
-    func removeRows(at offsets: IndexSet) {
-        numbers.remove(atOffsets: offsets)
     }
 }
 
