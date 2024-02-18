@@ -34,6 +34,34 @@ class Expense {
     }
 }
 
+struct ContentListView: View {
+    
+    @State var item: ExpenseItem
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(item.name)
+                    .font(.headline)
+                Text(item.type)
+            }
+            Spacer()
+            Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                .foregroundStyle(styleForAmount(amount: item.amount))
+        }
+    }
+    
+    func styleForAmount(amount: Double) -> Color {
+        if amount < 10 {
+            return .blue
+        } else if amount < 100 {
+            return .red
+        } else {
+            return .purple
+        }
+    }
+}
+
 struct ContentView: View {
     
     @State private var expenses = Expense()
@@ -43,33 +71,42 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(expenses.items) { item in
-                    HStack {
-                        VStack(alignment: .leading) { 
-                            Text(item.name)
-                                .font(.headline)
-                            Text(item.type)
-                        }
-                        Spacer()
-                        Text(item.amount, format: .currency(code: "USD"))
+                Section("Personal Expenses") {
+                    ForEach(expenses.items.filter { $0.type == "Personal" }) { item in
+                        ContentListView(item: item)
                     }
+                    .onDelete(perform: { offsets in
+                        removeItems(at: offsets, ofType: "Personal")
+                    })
                 }
-                .onDelete(perform: removeItems(at:))
+                
+                Section("Business Expenses") {
+                    ForEach(expenses.items.filter { $0.type == "Business" }) { item in
+                        ContentListView(item: item)
+                    }
+                    .onDelete(perform: { offsets in
+                        removeItems(at: offsets, ofType: "Business")
+                    })
+                }
             }
             .navigationTitle("iExpense")
             .toolbar {
-                Button("Add Expense", systemImage: "plus") {
+                Button(action: {
                     showingAddExpense = true
+                }) {
+                    Label("Add Expense", systemImage: "plus")
                 }
             }
-            .sheet(isPresented: $showingAddExpense, content: {
+            .sheet(isPresented: $showingAddExpense) {
                 AddView(expenses: expenses)
-            })
+            }
         }
     }
     
-    func removeItems(at offsets: IndexSet) {
-        expenses.items.remove(atOffsets: offsets)
+    func removeItems(at offsets: IndexSet, ofType type: String) {
+        let itemsOfType = expenses.items.enumerated().filter { $0.element.type == type }.map { $0.offset }
+        let offsetsToBeDeleted = offsets.compactMap { itemsOfType[$0] }
+        expenses.items.remove(atOffsets: IndexSet(offsetsToBeDeleted))
     }
 }
 
