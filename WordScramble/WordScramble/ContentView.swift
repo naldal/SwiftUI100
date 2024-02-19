@@ -17,6 +17,8 @@ struct ContentView: View {
     @State private var errorMessage = ""
     @State private var showingError = false
     
+    @State private var score = 0
+    
     
     var body: some View {
         NavigationStack {
@@ -25,7 +27,6 @@ struct ContentView: View {
                     TextField("enter your word", text: $newWord)
                         .textInputAutocapitalization(.never)
                 }
-                
                 Section {
                     ForEach(usedWords, id: \.self) { word in
                         HStack {
@@ -35,7 +36,6 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle(rootWord)
             .onSubmit {
                 self.addNewWord()
             }
@@ -45,6 +45,17 @@ struct ContentView: View {
             .alert(errorTitle, isPresented: $showingError) { } message: {
                 Text(errorMessage)
             }
+            
+            VStack {
+                Text("Your score is \(self.score)")
+            }
+            .padding(20)
+            .navigationTitle(rootWord)
+            .toolbar(content: {
+                Button("startGame") {
+                    self.startGame()
+                }
+            })
         }
     }
     
@@ -67,6 +78,16 @@ struct ContentView: View {
             return
         }
         
+        guard isNoPrefixOfRoot(word: answer) else {
+            wordError(title: "word is prefix of root string", message: "You shouldn't use prefix of the root word!")
+            return
+        }
+        
+        guard isLongEnough(word: answer) else {
+            wordError(title: "word is too short", message: "word is too short.")
+            return
+        }
+        self.score += answer.count
         withAnimation {
             usedWords.insert(answer, at: 0)
         }
@@ -90,9 +111,18 @@ struct ContentView: View {
         !usedWords.contains(word)
     }
     
+    func isLongEnough(word: String) -> Bool {
+        guard word.count > 3 else { return false }
+        return true
+    }
+    
+    func isNoPrefixOfRoot(word: String) -> Bool {
+        guard !rootWord.hasPrefix(word) else { return false }
+        return true
+    }
+    
     func isPossible(word: String) -> Bool {
         var tempWord = rootWord
-        
         for letter in word {
             if let pos = tempWord.firstIndex(of: letter) {
                 tempWord.remove(at: pos)
