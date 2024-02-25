@@ -39,11 +39,20 @@ struct MissionView: View {
                             .padding(.bottom, 5)
                         
                         Text(mission.description)
+                            .padding(.bottom)
+                        
+                        Group {
+                            if let launchDate = mission.launchDate {
+                                Text("Launched Date: \(mission.formattedLaunchDate)")
+                            }
+                        }
+                            
                         
                         Rectangle()
                             .frame(height: 2)
                             .foregroundStyle(.lightBackground)
                             .padding(.vertical)
+                        
                         
                         Text("Crew")
                             .font(.title.bold())
