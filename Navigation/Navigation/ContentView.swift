@@ -8,16 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var title = "SwiftUI"
     var body: some View {
         NavigationStack {
-            List(0..<100) { i in
-                Text("Row \(i)")
-            }
-            .navigationTitle("Title goes here")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.blue, for: .navigationBar)
-            .toolbarColorScheme(.dark)
-            .toolbar(.hidden, for: .navigationBar)
+            Text("hello")
+                .navigationTitle($title)
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
