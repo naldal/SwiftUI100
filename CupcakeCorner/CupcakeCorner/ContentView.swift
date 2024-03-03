@@ -7,48 +7,40 @@
 
 import SwiftUI
 
-struct Response: Codable {
-    var results: [Result]
-}
-
-struct Result: Codable {
-    var trackId: Int
-    var trackName: String
-    var collectionName: String
-}
-
 struct ContentView: View {
     
-    @State private var results = [Result]()
+    @State private var order = Order()
     
     var body: some View {
-        List(results, id: \.trackId) { item in
-            VStack(alignment: .leading) {
-                Text(item.trackName)
-                    .font(.headline)
+        NavigationStack {
+            Form {
+                Section {
+                    Picker("select your cake type", selection: $order.type) {
+                        ForEach(Order.types.indices, id: \.self) {
+                            Text(Order.types[$0])
+                        }
+                    }
+                    Stepper("number of cakes: \(order.quantity)", value: $order.quantity, in: 3...20)
+                }
                 
-                Text(item.collectionName)
+                Section {
+                    Toggle("Any special request?", isOn: $order.specialRequestEnabled)
+                    if order.specialRequestEnabled {
+                        Toggle("add extra frosting", isOn: $order.extraFrosting)
+                        Toggle("add extra sprinkles", isOn: $order.addSprinkles)
+                    }
+                }
+                
+                Section {
+                    NavigationLink("Delivery details") {
+                        AddressView(order: order)
+                    }
+                }
             }
-        }
-        .task {
-            await loadData()
+            .navigationTitle("Cupcake Corner")
         }
     }
-    
-    func loadData() async {
-        guard let url = URL(string: "https://itunes.apple.com/search?term=taylor+swift&entity=song") else {
-            print("invalid url")
-            return
-        }
-        
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let result = try JSONDecoder().decode(Response.self, from: data)
-            self.results = result.results
-        } catch {
-            print("invalid data")
-        }
-    }
+   
 }
 
 #Preview {
